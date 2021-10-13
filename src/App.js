@@ -1,25 +1,58 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { ReactSortable } from "react-sortablejs";
+import { DragHandle } from './DragHandle';
 
-function App() {
+const App = () => {
+  const [state, setState] = useState([]);
+  let [place, setPlace] = useState([]);
+
+  const AddComponent = () => {
+    const removePlace = (e) => {
+      e.preventDefault();
+      const nonMutable = [...state];
+      nonMutable.splice(nonMutable.indexOf(), 1);
+      setState(nonMutable);
+      console.log(nonMutable);
+    }
+
+    const changePlace = (e) => {
+      e.preventDefault();
+      const name = e.target.name;
+      const value = e.target.value;
+      setPlace([
+        ...place,
+        { [name]: value }
+      ]);
+      console.log(name)
+    }
+    console.log( place)
+    return (
+      <div>
+        <input name={place.value} type="text" onChange={(e) => changePlace(e)} value={place.value}></input>
+        <button type="button">Edit</button>
+        <button type="button" onClick={(e) => removePlace(e)}>delete</button>
+        <DragHandle />
+      </div>
+    )
+  }
+
+  const addStops = () => {
+    setState([...state, { component: <AddComponent />, id: state.length, name: place }])
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ReactSortable list={state} setList={setState}>
+        {state.map((item) => {
+          return (
+            <div key={item.id}>{item.component}{item.id}</div>
+          )
+        })}
+      </ReactSortable>
+      <button onClick={addStops}>Add stops</button>
     </div>
+
   );
-}
+};
 
 export default App;
